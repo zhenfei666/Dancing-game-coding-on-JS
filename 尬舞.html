@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="author" content="Script Tutorials" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>xuanwu</title>
+
+    <link href="css/styles.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+
+    <style>
+        #cont {
+            margin-top: 100px;
+            width: 400px;
+            height: 400px;
+            border-bottom: 1px solid yellow;
+            overflow: hidden;
+        }
+
+        #main {
+            width: 400px;
+            height: 400px;
+            /* border: 1px solid red; */
+            position: relative;
+            top: -300px;
+        }
+
+        .row {
+            height: 100px;
+        }
+
+        .row div {
+            width: 98px;
+            height: 98px;
+            /* border: 1px solid gray; */
+            float: left;
+        }
+
+        .black {
+            background: black;
+            /* background: url() */
+        }
+
+        .cebian {
+            position: relative;
+            top: 100px;
+            left: 370px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div style="clear:both;">
+        <script src="/gg_bd_ad_720x90.js" type="text/javascript"></script>
+        <script src="/follow.js" type="text/javascript"></script>
+    </div> -->
+    <div class="example">
+        <div class="player">
+            <div class="pl"></div>
+            <div class="title"></div>
+            <div class="artist"></div>
+            <div class="cover"></div>
+            <div class="controls">
+                <div class="play"></div>
+                <div class="pause"></div>
+                <div class="rew"></div>
+                <div class="fwd"></div>
+            </div>
+            <div class="volume"></div>
+            <div class="tracker"></div>
+        </div>
+        <ul class="playlist hidden">
+            <li audiourl="images/6039.mp3" cover="images/1.jpg" artist="Maroon 5">蔡妍 - 两个人.mp3</li>
+
+            <li audiourl="images/6039.mp3" cover="images/2.jpg" artist="平安">洋葱.mp3</li>
+
+            <li audiourl="images/6039.mp3" cover="images/2.jpg" artist="周杰伦">你听得到.mp3</li>
+        </ul>
+
+    </div>
+    <div style="clear:both;">
+        <script src="/gg_bd_ad_720x90-2.js" type="text/javascript"></script>
+    </div>
+    <div class="cebian">
+        <div class="div" id="ting">暂停</div>
+        <div class="div" id="kaishi">开始</div>
+        <br>
+        <!-- <input type="button" value="停" id="ting">
+    <input type="button" value="开始" id="kaishi"> <br> -->
+        <input type="text" id="fen" value="0" disabled>
+    </div>
+
+    <center>
+        <img src="./images/dance.gif" alt="" class="dance">
+    </center>
+    <div id="cont">
+        <div id="main"></div>
+    </div>
+</body>
+<script>
+
+    function Youxi() {
+        // 获取元素对象
+        this.main = document.getElementById('main');
+        this.clock; // 定时器
+        this.over = false;
+        this.sudu = 1;
+
+        // 创建div 的工厂
+        // 根据传入不同的条件返回不一样的div
+        this.cdiv = function (classNames) {
+            var div = document.createElement('div');
+            if (classNames) {
+                div.className = classNames;
+            }
+            return div;
+
+        }
+
+        // 创建一行div
+        this.crow = function () {
+            var row_div = this.cdiv('row');
+            // 生成随机数
+            var k = Math.floor(Math.random() * 4)
+            for (var i = 0; i < 4; i++) {
+                // 利用随机数做判断生成黑块
+                if (i == k) {
+                    var img = this.cdiv('black');
+                    // Object.style.backgroundImage=url(URL)|none
+                    img.style.backgroundImage = "url(" +"./images/"+ k + ".jpg)";
+                    row_div.appendChild(img);
+
+                } else {
+                    row_div.appendChild(this.cdiv());
+                }
+            }
+            return row_div;
+        }
+
+        // 游戏初始化
+        this.init = function () {
+            // 默认生成4行
+            for (var i = 0; i < 4; i++) {
+                this.main.appendChild(this.crow());
+            }
+            // 设置定时器
+            this.clock = setInterval('start.move()', 10);
+            // 绑定点击事件
+            this.clicks();
+        }
+
+        // 事件绑定方式
+        this.clicks = function () {
+            var that = this;
+            this.main.onclick = function (ev) {
+                // 在事件处理程序中，我们需要本对象，所以用that替代this;
+                // 事件委托获取事件触发的节点
+                var fou = ev.target;
+                // 游戏结束，不可点击
+                if (that.over == true) {
+                    alert('别挣扎了，游戏结束l');
+                } else if (fou.className == 'black') {
+                    //加分
+                    var fen = document.getElementById('fen');
+                    var fenshu = parseInt(fen.value);
+
+                    // 
+                    fen.value = ++fenshu;
+
+
+                    if (fenshu % 10 == 0) {
+                        // console.log(that.sudu);
+                        that.sudu += 0.5;
+                    }
+                    fou.className = '';
+                    fou.style.backgroundImage = "";
+                    fou.parentNode.pass = true;
+
+                } else {
+                    that.stop();
+                    that.over = true;
+                    // that.main.onclick = null;
+                    alert('游戏结束');
+                }
+            }
+        }
+
+        // 游戏停止
+        this.stop = function () {
+            clearInterval(start.clock);
+        }
+
+        // 动起来
+        this.move = function () {
+            var topInt = parseInt(getComputedStyle(this.main)['top']);
+            // 如果top等于0,创建一行，放到main的最前面
+            if (topInt > 0) {
+                this.main.insertBefore(this.crow(), this.main.firstChild);
+                this.main.style.top = '-100px';
+                if (this.main.lastChild.pass == undefined) {
+                    this.stop();
+                    this.over = true;
+                    alert('游戏结束');
+                } else {
+                    if (this.main.children.length > 5) {
+                        this.main.removeChild(this.main.lastChild);
+                    }
+                }
+            } else {
+                console.log(this.sudu);
+                this.main.style.top = topInt + this.sudu + "px";
+            }
+
+        }
+
+    }
+
+    var start = new Youxi();
+    // start.init();
+
+    // console.log(start.move);
+
+    // 调试代码
+    document.getElementById('ting').onclick = function () {
+        clearInterval(start.clock);
+    }
+
+    document.getElementById('kaishi').onclick = function () {
+        start.init()
+    }
+
+</script>
+
+</html>
